@@ -1,0 +1,52 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Auth\Access\HandlesAuthorization;
+use {{ namespacedModel }};
+use {{ namespacedUserModel }};
+
+class {{ class }}
+{
+    use HandlesAuthorization;
+
+    public function before(User $user, $ability)
+    {
+        //
+    }
+
+    public function viewAny({{ user }} $user)
+    {
+        return true;
+    }
+
+    public function view({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        return true;
+    }
+
+    public function create({{ user }} $user)
+    {
+        return true;
+    }
+
+    public function update({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        return true;
+    }
+
+    public function delete({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        return true;
+    }
+
+    public function restore({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        return true;
+    }
+
+    public function forceDelete({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        return true;
+    }
+}

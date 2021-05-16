@@ -1,0 +1,51 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ namespacedModel }};
+use {{ rootNamespace }}Http\Controllers\Controller;
+use {{ rootNamespace }}Http\Resources\{{ model }}Resource;
+use {{ rootNamespace }}Http\Requests\Create{{ model }}Request;
+use {{ rootNamespace }}Http\Requests\Update{{ model }}Request;
+
+class {{ class }} extends Controller
+{
+    public function index()
+    {
+        $this->authorize('viewAny', {{ model }}::class);
+
+        return {{ model }}Resource::collection(
+            {{ model }}::paginate()
+        );
+    }
+
+    public function store(Create{{ model }}Request $request)
+    {
+        ${{ modelVariable }} = $request->persist();
+
+        return {{ model }}Resource::make(${{ modelVariable }});
+    }
+
+    public function show({{ model }} ${{ modelVariable }})
+    {
+        $this->authorize('view', ${{ modelVariable }});
+
+        return {{ model }}Resource::make(${{ modelVariable }});
+    }
+
+    public function update(Update{{ model }}Request $request, {{ model }} ${{ modelVariable }})
+    {
+        ${{ modelVariable }} = $request->persist();
+
+        return {{ model }}Resource::make(${{ modelVariable }});
+    }
+
+    public function destroy({{ model }} ${{ modelVariable }})
+    {
+        $this->authorize('delete', ${{ modelVariable }});
+
+        ${{ modelVariable }}->delete();
+
+        return response()->json('success');
+    }
+}
