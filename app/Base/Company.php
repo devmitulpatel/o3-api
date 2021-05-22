@@ -8,6 +8,7 @@ use App\Http\Resources\OptionValueResource;
 use App\Models\Company as CompanyModel;
 use App\Models\CompanyType;
 use App\Models\Ledger as LedgerModel;
+use Illuminate\Support\Str;
 
 class Company
 {
@@ -38,8 +39,20 @@ class Company
         }
     }
 
-    public function create($input){
+    private function getNewRefCode(){
+        $code=Str::random(12);
 
+        while (CompanyModel::where('ref_code',$code)->count()){
+            $code=Str::random(12);
+        }
+
+        return $code;
+    }
+
+    public function create($input){
+        if (!array_key_exists('ref_code',$input)) {
+            $input['ref_code']=$this->getNewRefCode();
+        }
         $this->setCompany(CompanyModel::create($this->fixWhenInput($input)));
         auth()->user()->company()->save($this->getCompany());
         return $this->getCompany();
@@ -61,7 +74,6 @@ class Company
                unset($input[$key]);
             }
         }
-
         return $input;
     }
 

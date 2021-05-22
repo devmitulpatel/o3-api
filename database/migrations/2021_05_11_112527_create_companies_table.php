@@ -17,6 +17,7 @@ class CreateCompaniesTable extends Migration
 
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
+            $table->string('ref_code',12);
             $table->string('name',255);
             $table->string('pan')->nullable();
             $table->string('tan')->nullable();

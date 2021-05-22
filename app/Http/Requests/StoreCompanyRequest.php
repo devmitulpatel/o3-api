@@ -19,10 +19,10 @@ class StoreCompanyRequest extends FormRequest
         return [
             'name'=>['required','max:100'],
             'company_type'=>['required','exists:company_types,id'],
-            'pan'=>['required'],
-            'tan'=>[''],
-            'gst'=>[''],
-            'register_no'=>[''],
+            'pan'=>['required','unique:App\Models\Company,pan'],
+            'tan'=>['nullable','unique:App\Models\Company,tan'],
+            'gst'=>['nullable','unique:App\Models\Company,gst'],
+            'register_no'=>['nullable','unique:App\Models\Company,register_no'],
         ];
     }
 

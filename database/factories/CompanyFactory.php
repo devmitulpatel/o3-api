@@ -3,10 +3,13 @@
 namespace Database\Factories;
 
 use App\Models\Company;
+use App\Traits\CompanyTestHelper;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class CompanyFactory extends Factory
 {
+    use CompanyTestHelper;
     private $random=[];
     /**
      * The name of the factory's corresponding model.
@@ -15,73 +18,16 @@ class CompanyFactory extends Factory
      */
     protected $model = Company::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array
-     */
     public function definition()
     {
         return [
             //
             'tan'=>$this->getRandomTan(),
             'pan'=>$this->getRandomPan(),
-            'gst'=>$this->getRandomGst()
+            'gst'=>$this->getRandomGst(),
+            'ref_code'=>Str::random(12),
         ];
     }
 
-    private function getRandomTan(){
-        $data=[
-            $this->faker->randomLetter,
-            $this->faker->randomLetter,
-            $this->faker->randomLetter,
-            $this->faker->randomLetter,
-            $this->faker->randomDigit,
-            $this->faker->randomDigit,
-            $this->faker->randomDigit,
-            $this->faker->randomDigit,
-            $this->faker->randomDigit,
-            $this->faker->randomLetter,
-        ];
-        return $this->random['tan']=implode('',$data);
-    }
 
-//"P" stands for Individual
-//"C" stands for Company
-//"H" stands for Hindu Undivided Family (HUF)
-//"A" stands for Association of Persons (AOP)
-//"B" stands for Body of Individuals (BOI)
-//"G" stands for Government Agency
-//"J" stands for Artificial Juridical Person
-//"L" stands for Local Authority
-//"F" stands for Firm/ Limited Liability Partnership
-//"T" stands for Trust
-    private function getRandomPan(){
-        $type=['p','c','h','a','b','g','j','l','f','t'];
-        $data=[
-            $this->faker->randomLetter,
-            $this->faker->randomLetter,
-            $this->faker->randomLetter,
-            array_random($type),
-            $this->faker->randomLetter,
-            $this->faker->randomDigit,
-            $this->faker->randomDigit,
-            $this->faker->randomDigit,
-            $this->faker->randomDigit,
-            $this->faker->randomLetter,
-        ];
-        return $this->random['pan']=implode('',$data);
-    }
-
-    private function getRandomGst(){
-        $data=[
-            sprintf("%02d", array_random(range(1,37))),
-            $this->random['pan'],
-            $this->faker->randomDigit,
-            $this->faker->randomLetter,
-            $this->faker->randomDigit,
-        ];
-        return $this->random['gst']=implode('',$data);
-
-    }
 }

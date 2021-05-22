@@ -18,7 +18,7 @@ class RegisterUserController extends Controller
     public function store(RegisterUserRequest $request,Role $type){
 
         $request->presist($type);
-        return "success";
+        return 'success';
     }
 
     public function registerData(){

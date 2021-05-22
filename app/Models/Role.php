@@ -8,6 +8,8 @@ class Role extends \Spatie\Permission\Models\Role
 {
     use Actionable;
 
+
+
     public static function options()
     {
         return self::pluck('name')->mapWithKeys(function ($role) {

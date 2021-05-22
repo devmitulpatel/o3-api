@@ -19,13 +19,13 @@ class SuperAdminsSeeder extends Seeder
             'last_name'  => 'Super Admin',
             'email' => 'sadmin@test.com',
         ])->assignRole(ROLE_SUPER_ADMIN);
-
-
-        User::factory()->create([
-                                    'first_name'  => 'User',
-                                    'last_name'  => 'Admin',
-                                    'email' => 'admin@test.com',
-                                ])->assignRole(ROLE_ADMIN);
+//
+//
+//        User::factory()->create([
+//                                    'first_name'  => 'User',
+//                                    'last_name'  => 'Admin',
+//                                    'email' => 'admin@test.com',
+//                                ])->assignRole(ROLE_ADMIN);
 
     }
 }

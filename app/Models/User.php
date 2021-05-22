@@ -96,4 +96,10 @@ class User extends Authenticatable
     public function company(){
         return $this->belongsToMany(Company::class);
     }
+
+    public function companyAssociates(){
+        return $this->belongsToMany(Company::class,'company_associates','user_id','company_id');
+    }
+
+
 }
