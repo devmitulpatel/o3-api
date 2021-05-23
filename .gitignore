@@ -23,3 +23,13 @@ Homestead.json
 /.vagrant
 .phpunit.result.cache
 
+/.idea/aws.xml
+/.idea/commandlinetools/schemas/frameworkDescriptionVersion1.1.4.xsd
+/.idea/laravel-plugin.xml
+/.idea/commandlinetools/Laravel_01_05_21__11_35_PM.xml
+/.idea/modules.xml
+/.idea/o3-api.iml
+/.idea/php.xml
+/.idea/phpunit.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml

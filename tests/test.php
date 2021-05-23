@@ -22,4 +22,6 @@ $transaction=[
 
 //resolve(\App\Base\Ledger::class,['ledger'=>$data])->loadTransaction()->getTotalDebit();
 
-resolve(\App\Base\UserCompanies::getCompanies(\App\Models\User::find(1)));
+//resolve(\App\Base\UserCompanies::getCompanies(\App\Models\User::find(1)));
+
+dd(resolve(\App\Base\Product::class,['data'=>1]));
