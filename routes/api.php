@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\CompanyController;
+use App\Http\Controllers\API\CurrencyController;
 use App\Http\Controllers\API\DebugController;
 use App\Http\Controllers\API\LoginController;
 
@@ -26,10 +27,25 @@ Route::prefix('api/v1')->group(function (){
     Route::middleware('auth:sanctum')->group(function () {
         Route::resource('user', 'UserController')->only('update');
         Route::get('user/extra/options',[UserController::class,'options']);
+
         Route::resource('devices', 'DeviceController')->only('store');
         Route::get('auth/check',[UserController::class,'check']);
+
+        Route::apiResources([
+
+            'unit'=>'UnitController',
+            'currency'=>'CurrencyController',
+            'product'=>'ProductController'
+
+                            ]);
+
         Route::resource('company','CompanyController');
-        Route::get('company/extra/options',[CompanyController::class,'options']);
+        Route::prefix('company')->group(function () {
+
+            Route::get('extra/options',[CompanyController::class,'options']);
+
+        });
+
 
     });
 

@@ -14,12 +14,22 @@ class CreateProductsTable extends Migration
     public function up()
     {
 
-        Schema::table('units',function (Blueprint $table) {
+
+        $baseTable=function (Blueprint $table){
             $table->id();
-            $table->string('name');
-            $table->unsignedBigInteger('symbol');
-            $table->boolean('status')->default(1);
+            $table->string('name',50);
+            $table->string('symbol',50);
+            $table->double('base_rate')->default(1.0);
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->timestamps();
+        };
+
+        Schema::create('currencies',function (Blueprint $table)use ($baseTable){
+            $baseTable($table);
+        });
+
+        Schema::create('units',function (Blueprint $table)use ($baseTable) {
+            $baseTable($table);
 
     });
 
@@ -27,7 +37,7 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->string('rateable_type');
             $table->unsignedBigInteger('rateable_id');
-            $table->unsignedBigInteger('measurement_id');
+            $table->unsignedBigInteger('currency_id');
             $table->unsignedBigInteger('rate')->default(0);
             $table->boolean('status')->default(1);
             $table->timestamps();
@@ -38,8 +48,6 @@ class CreateProductsTable extends Migration
             $table->string('measurementable_type');
             $table->string('measurementable_id');
             $table->unsignedInteger('unit_id');
-            $table->string('name',255);
-            $table->string('symbol',50);
             $table->unsignedBigInteger('value')->default(0);
             $table->boolean('status')->default(1);
             $table->timestamps();
@@ -49,7 +57,7 @@ class CreateProductsTable extends Migration
         $baseTable=function ($table){
             $table->id();
             $table->string('name',255);
-            $table->string('description',2000);
+            $table->string('description',2000)->nullable();
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('in_stock')->default(0);
             $table->unsignedBigInteger('sold_stock')->default(0);
@@ -80,5 +88,6 @@ class CreateProductsTable extends Migration
         Schema::dropIfExists('measurements');
         Schema::dropIfExists('products');
         Schema::dropIfExists('services');
+        Schema::dropIfExists('currencies');
     }
 }

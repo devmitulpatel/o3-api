@@ -4,6 +4,8 @@
 namespace App\Traits;
 
 
+use App\Base\Product;
+
 trait BaseClassHelper
 {
 
@@ -58,5 +60,36 @@ trait BaseClassHelper
         return $this->data;
     }
 
+    public function getRelated($key){
+        if(array_key_exists($key,$this->getRalation())){
+            $model=$this->getRalation($key);
+            return $model;
+        }
+    }
+
+    public static function getRules(bool $store=true):array{
+        $class=new static();
+        $rules=[];
+        if($store){
+            $rules=array_merge($rules,$class->storeRule());
+        }else{
+            $rules=array_merge($rules,$class->updateRule());
+        }
+        foreach ($class->allowedKeyForRelation  as $meta){
+            if(!array_key_exists($meta,$rules)) {
+                $rules[$meta] = ['array'];
+            }
+        }
+        foreach ($class->allowedKeyForMeta as $related){
+            if(!array_key_exists($related,$rules)) {
+                $rules[$related] = [];
+            }
+        }
+        return $rules ;
+    }
+
+    protected function getRalation($key=null){
+        return ($key===null && ($key!==null && !array_key_exists($key,$this->relation)))?$this->relation:$this->relation[$key];
+    }
 
 }

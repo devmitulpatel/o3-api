@@ -27,7 +27,6 @@ class UpdateCompanyRequest extends FormRequest
 
     public function presist(Company $company)
     {
-
         resolve(CompanyBase::class,['company'=>$company])->update($this->validated());
 
     }

@@ -20,8 +20,22 @@ $transaction=[
     'amount'=>10
 ];
 
+$product=[
+    'name'=>'test',
+    'description'=>"test",
+    'company_id'=>1
+];
 //resolve(\App\Base\Ledger::class,['ledger'=>$data])->loadTransaction()->getTotalDebit();
 
 //resolve(\App\Base\UserCompanies::getCompanies(\App\Models\User::find(1)));
 
-dd(resolve(\App\Base\Product::class,['data'=>1]));
+
+//$product=resolve(\App\Base\Product::class,['data'=>$product])->getData()->load(['measurements','measurements.rates']);
+
+$product=\App\Models\Product::first()->load('company');
+    //->load(['measurements','measurements.rates','measurements.unit','measurements.rates.currency']);
+
+
+dd($product->toArray());
+
+

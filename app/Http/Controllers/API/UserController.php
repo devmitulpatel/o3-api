@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\OptionResource;
 use App\Http\Resources\UserResource;
+use App\Models\Company;
 use App\Models\User;
 
 class UserController extends Controller
@@ -24,6 +25,11 @@ class UserController extends Controller
 
     public function options(){
         return OptionResource::make(RegisterUser::getOptions());
+    }
+
+    public function updateCompany(Company $company)
+    {
+
     }
 
 }

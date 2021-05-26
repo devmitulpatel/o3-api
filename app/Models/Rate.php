@@ -10,4 +10,8 @@ class Rate extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function currency() {
+        return $this->hasOne(Currency::class,'id','currency_id');
+    }
 }
