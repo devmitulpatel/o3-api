@@ -20,7 +20,7 @@ class ProductController extends Controller
     public function index()
     {
 
-        return ProductResource::collection(Product::query()->paginate());
+        return ProductResource::collection(Product::query()->with(['meta'])->paginate());
     }
 
     /**
@@ -54,7 +54,7 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request,Product $product)
     {
-        return ProductResource::make($request->presist());
+        return ProductResource::make($request->presist($product));
     }
 
     /**

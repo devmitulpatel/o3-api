@@ -1,13 +1,19 @@
 <?php
 
-dd("hereR̥");
+use \App\Models\Reversible;
+use \App\Models\User;
+
+auth()->loginUsingId(2);
+
+//dd(User::find(auth()->id())->delete());
+dd(User::magicRestore(Reversible::find(2)));
 
 
 const COMPANY_TYPE = 1;
 
 $data=[
     //region Description
-    'type'=>\App\Models\User::class,
+    'type'=> User::class,
     //endregion
     'balance'=>0,
     'owner_id'=>1
@@ -17,9 +23,9 @@ $data=[
 $transaction=[
     'ledger_id'=>1,
     'payer_id'=>1,
-    'payer_type'=>\App\Models\User::class,
+    'payer_type'=> User::class,
     'payee_id'=>2,
-    'payee_type'=>\App\Models\User::class,
+    'payee_type'=> User::class,
     'amount'=>10
 ];
 

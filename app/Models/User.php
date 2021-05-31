@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Traits\ModelHelper;
 use App\Traits\Searchable;
+use App\Traits\Reversible as ReversibleTrait;
 use App\Filters\UserFilters;
 use App\Traits\HasSocialAccounts;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +20,12 @@ use Storage;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes, HasApiTokens, HasRoles, HasSocialAccounts, Actionable, Searchable,Metable;
+
+    use HasFactory, Notifiable,
+        SoftDeletes,
+        HasApiTokens, HasRoles, HasSocialAccounts, Actionable, Searchable,Metable,
+        //ReversibleTrait
+        ,ModelHelper;
 
     protected $fillable = [
         'first_name','last_name', 'email', 'avatar', 'locale', 'active', 'password','email_verified_at'
@@ -101,5 +108,8 @@ class User extends Authenticatable
         return $this->belongsToMany(Company::class,'company_associates','user_id','company_id');
     }
 
+    public function currentCompany(){
+        return $this->belongsTo(Company::class);
+    }
 
 }

@@ -20,14 +20,14 @@ class Product extends BaseClass implements BaseClassIneterfaces
     public $allowedKeyInTable=[
         'name','description','company_id'
     ];
-    public $allowedKeyForRelation=['rate','measurement'];
+    public $allowedKeyForRelation=['measurements','rates'];
     public $allowedKeyForMeta=['color'];
 
-    public $relationData=[];
+
 
     public $relation=[
-        'rate'=>Rate::class,
-        'measurement'=>Measurement::class,
+        'measurements'=>Measurement::class,
+        'rates'=>Rate::class,
     ];
 
     /**
@@ -37,6 +37,7 @@ class Product extends BaseClass implements BaseClassIneterfaces
     {
         $this->fixData($data);
         $this->setData($data);
+
     }
 
 
@@ -45,11 +46,61 @@ class Product extends BaseClass implements BaseClassIneterfaces
     }
     public function create($data)
     {
-        return $this->setData($this->getModel()::create($data));
+        $this->setData($this->getModel()::create($data));
+        $k=0;
+        if(array_key_exists($this->allowedKeyForRelation[$k],$this->getRelationData())){
+            $this->saveManyRelated($this->allowedKeyForRelation[$k],$this->getRelationData($this->allowedKeyForRelation[$k]));
+        }
+        $k++;
+        if(array_key_exists($this->allowedKeyForRelation[$k],$this->getRelationData())) {
+
+            $relation = $this->allowedKeyForRelation[$k];
+            $related = $this->allowedKeyForRelation[$k - 1];
+            $unitKey = $this->getRawData()[$relation]['key'];
+            $foundMeasurment = array_first(array_where($this->getRawData()[$related], function ($array) use ($unitKey) {
+                return $array['key'] == $unitKey;
+            }));
+
+            $measurmentModel = $this->getData()->$related()->where('value', $foundMeasurment['value']);
+            if ($measurmentModel->count()) {
+                $this->saveRelated($relation, array_first($this->getRelationData($this->allowedKeyForRelation[$k])), $measurmentModel->first());
+
+            }
+        }
+        foreach ($this->getMeta() as $key=>$meta){
+            $this->getData()->setMeta($key,$meta);
+        }
+        return $this->getData() ;
     }
+
+    public function update($data){
+        $this->fixData($data);
+        $this->getData()->update($data);
+
+        $k=0;
+        if(array_key_exists($this->allowedKeyForRelation[$k],$this->getRelationData())){
+            $this->updateManyRelated($this->allowedKeyForRelation[$k],$this->getRelationData($this->allowedKeyForRelation[$k]));
+        }
+        $k++;
+
+      //  dd($this->getRawData()['measurements']);
+//        $this->getData()->refresh();
+//        $v1=$this->getRawData()['measurements'][0]['value'];
+//        $v2=$this->getData()->measurement->toArray()[0]['value'];
+
+       // dd(implode(' ',[$v1,$v2]));
+
+        foreach ($this->getMeta() as $key=>$meta){
+            $this->getData()->setMeta($key,$meta);
+        }
+        return $this->getData();
+    }
+
     public function fixData(&$data){
+
         $extra=[];
         if(is_array($data)){
+            $this->setRawData($data);
             foreach ($data as $key=>$value){
                 if(!in_array($key, $this->allowedKeyInTable)){
                     $extra[$key]=$value;
@@ -57,17 +108,15 @@ class Product extends BaseClass implements BaseClassIneterfaces
                 }
             }
         }
-
         if(count($extra)) {
 
             foreach ($extra as $key => $value) {
                 if (in_array($key, $this->allowedKeyForMeta)) {
-                    $this->getModel()->setMeta($key,(string)$value);
+                    $this->setMeta($key,(string)$value);
                 }elseif (in_array($key,$this->allowedKeyForRelation)){
 
                     switch ($key){
-                        case 'measurement':
-
+                        case 'measurements':
                             foreach ($value as $related){
                                 $model=$this->getRelated($key);
                                 $model->value=$related['value'];
@@ -75,20 +124,18 @@ class Product extends BaseClass implements BaseClassIneterfaces
                                 $this->setRelationData($model,$key);
                             }
                             break;
-                        case 'rate':
+                        case 'rates':
+                            $model=null;
                                 $model=$this->getRelated($key);
-                                $model->rate=$related['rate'];
+                                $model->rate=$value['rate'];
                                 $model->currency_id=1;
-
-                            dd($this->getModel()->measurements);
+                            $this->setRelationData($model,$key);
                             break;
                     }
 
                 }
             }
         }
-
-        if(is_array($data) &&count($data))dd($extra);
     }
 
     public function updateRule():array{
@@ -97,8 +144,8 @@ class Product extends BaseClass implements BaseClassIneterfaces
             'name'=>['required'],
             'description'=>['required'],
             'company_id'=>[],
-            'rate'=>['array'],
-            'measurement'=>['array'],
+            'rates'=>['array'],
+            'measurements'=>['array'],
 
         ];
     }
@@ -108,27 +155,13 @@ class Product extends BaseClass implements BaseClassIneterfaces
             'name'=>['required'],
             'description'=>['required'],
             'company_id'=>[],
-            'rate'=>['array'],
-            'measurement'=>['array'],
+            'rates'=>['array'],
+            'measurements'=>['array'],
 
         ];
     }
 
-    /**
-     * @return Collection
-     */
-    public function getRelationData(): Collection
-    {
-        return collect($this->relationData);
-    }
 
-    /**
-     * @param array $relationData
-     */
-    public function setRelationData( $relationData,$key): void
-    {
-        $this->relationData[$key][] = $relationData;
-    }
 
 
 

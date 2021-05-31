@@ -49,7 +49,7 @@ class ProductNServiceFunctionTest extends TestCase
         ];
 
 
-        $product= ['name'=>$this->faker->name,'description'=> '1w23','rate'=>$rate,'measurement'=>$measurementData,'color'=>'red'];
+        $product= ['name'=>$this->faker->name,'description'=> '1w23','rates'=>$rate,'measurements'=>$measurementData,'color'=>'red'];
         $response = $this->postJson($this->getUrl('product'),$product);
         $response->assertStatus(201)->assertJson(['data' => ['name' =>$product['name']]]);
     }
@@ -57,8 +57,26 @@ class ProductNServiceFunctionTest extends TestCase
     public function test_update_product(){
         $this->seedFirst();
         $this->signIn();
+
+        $measurement=Unit::all();
+        $measurementData=[];
+        foreach ($measurement as $m){
+            $measurementData[]=[
+                'key'=>$m->id,
+                'value'=>random_int(10,100),
+            ];
+        }
+        $rate=[];
+        $rateMeaseurment=array_random($measurementData);
+
+        $rate=[
+            'key'=>$rateMeaseurment['key'],
+            'rate'=>200
+        ];
+
         $product= Product::oldest()->first()->id;
-        $update_product=['name'=>$this->faker->name,'description'=>'ew'];
+        $update_product=['name'=>$this->faker->name,'description'=>'ew','rates'=>$rate,'measurements'=>$measurementData,'color'=>'red'];
+
         $response = $this->patchJson($this->getUrl('product/'.$product),$update_product);
         $response->assertStatus(200);
 

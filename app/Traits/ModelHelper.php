@@ -12,4 +12,8 @@ trait ModelHelper
         return $query->where('status',true);
     }
 
+    public function id(){
+        return $this->id;
+    }
+
 }

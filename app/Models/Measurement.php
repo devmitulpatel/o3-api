@@ -11,26 +11,22 @@ class Measurement extends Model
     use HasFactory;
     use HasRate;
     protected $guarded = [];
-
-    protected $appends=['price'];
-
+    protected $hidden = ['rates','unit','measurementable_type','measurementable_id','unit_id','created_at','updated_at'];
+    protected $appends=[
+        'unit_name',
+        'unit_symbol'
+    ];
     public function unit(){
         return $this->hasOne(Unit::class,'id','unit_id');
     }
 
-    public function getPriceAttribute():array{
-        $data=[];
-        foreach ($this->rates as $rate){
-            $data= [
-                    'price'=>$this->value*$rate->rate,
-                    'rate'=>$rate->rate,
-                    'qt'=>$this->value,
-                    'currency'=>$rate->currency->name,
-                    'currency_symbol'=>$rate->currency->symbol,
-                ];
-                $this->value*$rate->rate;
-        }
-        return $data;
+    public function getUnitNameAttribute(){
+
+        return $this->unit->name;
+    }
+    public function getUnitSymbolAttribute(){
+
+        return $this->unit->symbol;
     }
 
 }
