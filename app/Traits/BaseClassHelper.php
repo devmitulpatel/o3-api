@@ -5,6 +5,8 @@ namespace App\Traits;
 
 
 use App\Base\Product;
+use App\Models\Measurement;
+use PHPUnit\Exception;
 
 trait BaseClassHelper
 {
@@ -24,7 +26,7 @@ trait BaseClassHelper
      */
     public function getMeta()
     {
-        return $this->meta;
+        return $this->meta??[];
     }
 
 
@@ -43,7 +45,6 @@ trait BaseClassHelper
 
     public function setData($data=null){
         $method=implode('',['set',last(explode('\\',static::class))]);
-
         switch (gettype($data)){
             case null;
                 break;
@@ -132,9 +133,27 @@ trait BaseClassHelper
     public function updateRelated(string $key,array $value,$model=null){
 
     }
-    public function updateManyRelated(string $key,array $value,$model=null){
+    public function updateManyRelated(string $key,array $value,$pKey='id',$model=null){
 
-        dd($value);
+      //  dd($value);
+      //  $this->getData()->$key()->where('key',)->delete();
+        foreach ($value as $val){
+            $array=[];
+            $row=$this->getData()->$key->where('key',$val->key)->first();
+            $foundRelatedRecord=$this->getData()->$key()->where($pKey,$val->$pKey)->first();
+            if($foundRelatedRecord===null){
+                $this->getData()->$key()->save($val);
+            }else{
+                foreach (array_keys($row->getAttributes()) as $k){
+                    if($val->$k!==null){
+                        $array[$k]=$val->$k;
+                    }
+                }
+                $this->getData()->$key->where($pKey,$array[$pKey])->first()->update($array);
+            }
+
+        }
+        $this->getData()->fresh([$key]);
 
     }
 
@@ -153,5 +172,17 @@ trait BaseClassHelper
     {
         $this->rawData = $rawData;
     }
+
+
+    public static function getMagicWord($name){return implode('_',['',$name]);}
+
+    public static function __callStatic($method, $arguments)
+    {
+        $method=self::getMagicWord($method);
+        $class=new static();
+
+        return (method_exists($class,$method))?$class->$method(...$arguments):null;
+    }
+
 
 }

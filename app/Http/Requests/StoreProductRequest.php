@@ -16,7 +16,6 @@ class StoreProductRequest extends FormRequest
 
     public function rules()
     {
-
         return ProductBase::getRules() ;
     }
 
@@ -31,6 +30,6 @@ class StoreProductRequest extends FormRequest
 
     public function presist()
     {
-        return (new ProductBase($this->validated()))->getData();
+        return (new ProductBase($this->validated()))->getData()->load(['measurements','measurements.rates','measurements.rates.currency']);
     }
 }

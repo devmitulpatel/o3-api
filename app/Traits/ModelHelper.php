@@ -13,6 +13,8 @@ trait ModelHelper
     }
 
     public function id(){
+
+
         return $this->id;
     }
 

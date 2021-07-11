@@ -30,6 +30,7 @@ class ProductNServiceFunctionTest extends TestCase
     }
 
     public function test_create_product(){
+
         $this->seedFirst();
         $this->signIn();
         $measurement=Unit::all();
@@ -55,6 +56,7 @@ class ProductNServiceFunctionTest extends TestCase
     }
 
     public function test_update_product(){
+
         $this->seedFirst();
         $this->signIn();
 
@@ -63,21 +65,19 @@ class ProductNServiceFunctionTest extends TestCase
         foreach ($measurement as $m){
             $measurementData[]=[
                 'key'=>$m->id,
-                'value'=>random_int(10,100),
+                'value'=>random_int(10,20),
             ];
         }
-        $rate=[];
-        $rateMeaseurment=array_random($measurementData);
 
+        $rateMeaseurment=array_random($measurementData);
         $rate=[
             'key'=>$rateMeaseurment['key'],
             'rate'=>200
         ];
-
         $product= Product::oldest()->first()->id;
         $update_product=['name'=>$this->faker->name,'description'=>'ew','rates'=>$rate,'measurements'=>$measurementData,'color'=>'red'];
-
         $response = $this->patchJson($this->getUrl('product/'.$product),$update_product);
+        dd(json_decode($response->getContent(),true));
         $response->assertStatus(200);
 
     }

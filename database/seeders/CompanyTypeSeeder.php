@@ -26,9 +26,7 @@ class CompanyTypeSeeder extends Seeder
             ['name'=>'Trust'],
             ['name'=>'Solo Proprietor'],
         ];
-        $this->ForEach(CompanyType::class,$data,static function ($model){
-            return $model;
-        });
+        $this->ForEach(CompanyType::class,$data, fn(CompanyType $model) => $model);
 
     }
 }

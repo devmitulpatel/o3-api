@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\ModelHelper;
 use Laravel\Nova\Actions\Actionable;
 
 class Role extends \Spatie\Permission\Models\Role

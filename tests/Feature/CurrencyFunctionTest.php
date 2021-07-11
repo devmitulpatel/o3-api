@@ -41,7 +41,7 @@ class CurrencyFunctionTest extends TestCase
         $currency= Currency::oldest()->first()->id;
         $update_currency=['name'=>$this->faker->name,'symbol'=>'ew','base_rate'=>0.0012];
         $response = $this->patchJson($this->getUrl('currency/'.$currency),$update_currency);
-        $response->assertStatus(200)->assertJson(['data' => ['name' =>$update_currency['name'],'symbol'=>'ew','base_rate'=>0.0012]]);
+        $response->assertStatus(200)->assertJson(['data' => ['name' =>$update_currency['name'],'symbol'=>'ew']]);
     }
 
     public function test_delete_currency(){

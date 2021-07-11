@@ -11,4 +11,6 @@ class CompanyType extends Model
     use HasFactory,ModelHelper;
 
     protected $guarded = [];
+
+    protected $fillable=['name'];
 }

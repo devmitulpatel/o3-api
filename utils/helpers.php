@@ -14,3 +14,4 @@ function company(){
 function user(){
     return (!auth()->check())? User::latest()->first() :auth()->user();
 }
+

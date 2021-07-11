@@ -9,7 +9,9 @@ use App\Base\Interfaces\BaseClass;
 use App\Base\Interfaces\BaseClassIneterfaces ;
 use App\Models\Measurement;
 use App\Models\Rate;
+use Exception;
 use Illuminate\Support\Collection;
+use PhpParser\Builder;
 
 
 class Product extends BaseClass implements BaseClassIneterfaces
@@ -21,8 +23,7 @@ class Product extends BaseClass implements BaseClassIneterfaces
         'name','description','company_id'
     ];
     public $allowedKeyForRelation=['measurements','rates'];
-    public $allowedKeyForMeta=['color'];
-
+    public $allowedKeyForMeta=['color','company'];
 
 
     public $relation=[
@@ -46,27 +47,25 @@ class Product extends BaseClass implements BaseClassIneterfaces
     }
     public function create($data)
     {
+
         $this->setData($this->getModel()::create($data));
+
         $k=0;
         if(array_key_exists($this->allowedKeyForRelation[$k],$this->getRelationData())){
-            $this->saveManyRelated($this->allowedKeyForRelation[$k],$this->getRelationData($this->allowedKeyForRelation[$k]));
+            $foundMeasurment=$this->saveManyRelated($this->allowedKeyForRelation[$k],$this->getRelationData($this->allowedKeyForRelation[$k]));
         }
         $k++;
-        if(array_key_exists($this->allowedKeyForRelation[$k],$this->getRelationData())) {
 
+        if(array_key_exists($this->allowedKeyForRelation[$k],$this->getRelationData())) {
             $relation = $this->allowedKeyForRelation[$k];
             $related = $this->allowedKeyForRelation[$k - 1];
             $unitKey = $this->getRawData()[$relation]['key'];
-            $foundMeasurment = array_first(array_where($this->getRawData()[$related], function ($array) use ($unitKey) {
-                return $array['key'] == $unitKey;
-            }));
+            $foundMeasurment=$this->getData()->$related()
+                ->where('unit_id',$this->getRawData()[$relation]);
+            $foundMeasurment->first()->addRate( array_first($this->getRelationData($this->allowedKeyForRelation[$k])));
 
-            $measurmentModel = $this->getData()->$related()->where('value', $foundMeasurment['value']);
-            if ($measurmentModel->count()) {
-                $this->saveRelated($relation, array_first($this->getRelationData($this->allowedKeyForRelation[$k])), $measurmentModel->first());
-
-            }
         }
+
         foreach ($this->getMeta() as $key=>$meta){
             $this->getData()->setMeta($key,$meta);
         }
@@ -74,25 +73,42 @@ class Product extends BaseClass implements BaseClassIneterfaces
     }
 
     public function update($data){
-        $this->fixData($data);
-        $this->getData()->update($data);
 
-        $k=0;
+          $this->fixData($data);
+          $this->getData()->update($data);
+
+          $k=0;
+    if(array_key_exists($this->allowedKeyForRelation[$k],$this->getRelationData())){
+        $this->updateManyRelated($this->allowedKeyForRelation[$k],$this->getRelationData($this->allowedKeyForRelation[$k]),'unit_id');
+    }
+        $k=$k+1;
         if(array_key_exists($this->allowedKeyForRelation[$k],$this->getRelationData())){
-            $this->updateManyRelated($this->allowedKeyForRelation[$k],$this->getRelationData($this->allowedKeyForRelation[$k]));
+
+            $measure=$this->getData()->{$this->allowedKeyForRelation[$k-1]}();
+            $hasRatesMeasrement=$measure->whereHas('rates',function ($data){
+
+                try {
+                    return $data;
+                }catch (Exception $e){
+                    return $data;
+                }
+
+            });
+
+            if($hasRatesMeasrement->count()>0)$hasRatesMeasrement->get()->first()
+                ->removeAllRate();
+            $this->getData()->{$this->allowedKeyForRelation[$k-1]}()
+                ->where('unit_id',(int) $this->getRawData()['rates']['key'])
+                ->first()->addRate($this->getRawData()['rates']['rate']);
+
+            foreach ($this->getMeta() as $key=>$meta){
+                $this->getData()->setMeta($key,$meta);
+            }
+
+
         }
-        $k++;
 
-      //  dd($this->getRawData()['measurements']);
-//        $this->getData()->refresh();
-//        $v1=$this->getRawData()['measurements'][0]['value'];
-//        $v2=$this->getData()->measurement->toArray()[0]['value'];
 
-       // dd(implode(' ',[$v1,$v2]));
-
-        foreach ($this->getMeta() as $key=>$meta){
-            $this->getData()->setMeta($key,$meta);
-        }
         return $this->getData();
     }
 
@@ -109,12 +125,10 @@ class Product extends BaseClass implements BaseClassIneterfaces
             }
         }
         if(count($extra)) {
-
             foreach ($extra as $key => $value) {
                 if (in_array($key, $this->allowedKeyForMeta)) {
                     $this->setMeta($key,(string)$value);
                 }elseif (in_array($key,$this->allowedKeyForRelation)){
-
                     switch ($key){
                         case 'measurements':
                             foreach ($value as $related){
@@ -125,18 +139,18 @@ class Product extends BaseClass implements BaseClassIneterfaces
                             }
                             break;
                         case 'rates':
-                            $model=null;
+                                $model=null;
                                 $model=$this->getRelated($key);
                                 $model->rate=$value['rate'];
                                 $model->currency_id=1;
                             $this->setRelationData($model,$key);
                             break;
                     }
-
                 }
             }
         }
     }
+
 
     public function updateRule():array{
 

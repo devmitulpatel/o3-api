@@ -24,8 +24,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable,
         SoftDeletes,
         HasApiTokens, HasRoles, HasSocialAccounts, Actionable, Searchable,Metable,
-        //ReversibleTrait
-        ,ModelHelper;
+        //ReversibleTrait,
+        ModelHelper;
 
     protected $fillable = [
         'first_name','last_name', 'email', 'avatar', 'locale', 'active', 'password','email_verified_at'

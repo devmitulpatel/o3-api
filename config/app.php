@@ -183,6 +183,7 @@ return [
 
         Plank\Metable\MetableServiceProvider::class,
 
+        \App\Providers\Layer1::class
     ],
 
     /*
@@ -235,6 +236,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Application'  => App\Base\Application::class,
+        'ErpItem'=>App\Base\Item::class
     ],
 
 ];

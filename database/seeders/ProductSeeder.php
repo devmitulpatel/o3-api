@@ -28,14 +28,16 @@ class ProductSeeder extends Seeder
        $productData=[
            [
                'name'=>'Test Product',
-           'description'=>'Test Product description',
+               'description'=>'Test Product description',
                'company_id'=>1
                ]
        ];
+        $load=['measurements'];
 
        $this->ForEach(Product::class,$productData,function (Product $model){
            $model->addMeasurement(100,1);
            $model->measurements->first()->addRate(100);
+           return $model;
 
        });
 
